@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="js/jquery-2.2.3.js"></script>
+    <script src="js/Computation.js"></script>
+    <script src="js/Render.js"></script>
+    <script src="js/ramda.js"></script>
+    <script src="js/LoadTemplate.js"></script>
+</head>
+<body>
+<input id="param" type="text">
+<div id="content"></div>
+<div id="contentLength"></div>
+<script>
+    $(function () {
+        var demoData = val();
+
+        $('#param').keyup(function(){
+            set(demoData,{data:$(this).val()});
+        });
+
+        var loadTemplateToDomWithData = function (url, fillDomFunction, data) {
+            return loadTemplate(url).then(
+                    R.pipe(
+                            R.curry(fill)(R.__, data),
+                            R.prop('output'),
+                            fillDomFunction
+                    )
+            );
+        };
+
+        var drawContent = auto(function (data) {
+            if (data != null)
+                loadTemplateToDomWithData('fragment1.html', R.bind($.prototype.html, $('#content')), data);
+        });
+
+        var drawContentLength = auto(function (data) {
+            if (data != null)
+                loadTemplateToDomWithData('fragment2.html', R.bind($.prototype.html, $('#contentLength')), data);
+        });
+        drawContent(demoData);
+        drawContentLength(demoData);
+    });
+</script>
+</body>
+</html>
